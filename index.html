@@ -44,6 +44,7 @@ a{color:var(--pri)}
 .cam .bar{padding:16px;color:#fff;text-align:center;background:#000}
 .cam .frame{position:absolute;left:50%;top:40%;width:62vmin;height:62vmin;transform:translate(-50%,-50%);border:3px solid #fff;border-radius:20px;box-shadow:0 0 0 100vmax rgba(0,0,0,.45)}
 .cam button{margin-top:10px;background:#fff;border:0;border-radius:12px;padding:12px 22px;font-size:16px}
+.ph{display:inline-block;margin-top:10px;background:#fff;color:#000;border-radius:12px;padding:12px 22px;font-size:16px;cursor:pointer}
 .cam .alt{display:flex;gap:8px;margin:12px auto 0;max-width:360px}.cam .alt input{padding:12px}.cam .alt button{margin:0}
 .out{margin-left:auto;background:none;border:1px solid #3a4a66;color:#b6c3d8;border-radius:10px;padding:8px 12px;font-size:13px;display:none;cursor:pointer}
 #f{display:none}
@@ -101,7 +102,7 @@ a{color:var(--pri)}
  <video id="vd" playsinline muted></video><div class="frame"></div>
  <div class="bar"><div id="cs">Point the camera at your Tapstar card QR</div>
   <div class="alt"><input type="text" id="man" placeholder="Or type the card code"><button type="button" id="mok">Use</button></div>
-  <button type="button" id="cc">Cancel</button></div>
+  <label class="ph">📸 Scan from photo<input type="file" id="ph" accept="image/*" capture="environment" hidden></label><br><button type="button" id="cc">Cancel</button></div>
 </div>
 
 <script>
@@ -140,20 +141,45 @@ $("eye").onclick=()=>{const p=$("pw");p.type=p.type==="password"?"text":"passwor
 // camera
 function stop(){cancelAnimationFrame(raf);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$("cam").classList.remove("on")}
 function got(v){qr=v.trim();$("sc").classList.add("done");$("st").textContent="QR scanned ✓";$("ss").textContent=qr.length>34?qr.slice(0,34)+"…":qr;$("sb").innerHTML="Scan<br>Again";stop()}
-async function openCam(){
- $("cam").classList.add("on");$("cs").textContent="Point the camera at your Tapstar card QR";
- try{
-  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}}});
-  const v=$("vd");v.srcObject=stream;await v.play();
-  const c=document.createElement("canvas"),x=c.getContext("2d",{willReadFrequently:true});
-  const tick=()=>{
-   if(v.readyState>=2){c.width=v.videoWidth;c.height=v.videoHeight;x.drawImage(v,0,0);
-    const d=x.getImageData(0,0,c.width,c.height),r=window.jsQR&&jsQR(d.data,d.width,d.height);
-    if(r&&r.data){got(r.data);return}}
-   raf=requestAnimationFrame(tick)};
-  tick();
- }catch(e){$("cs").textContent="Camera unavailable. Type the card code below."}
+function findQR(src,w,h,ctx,c){
+ return (async()=>{
+  try{if(window.BarcodeDetector){const r=await new BarcodeDetector({formats:["qr_code"]}).detect(src);if(r.length)return r[0].rawValue}}catch(e){}
+  if(window.jsQR){const d=ctx.getImageData(0,0,w,h),r=jsQR(d.data,w,h,{inversionAttempts:"attemptBoth"});if(r&&r.data)return r.data}
+  return "";
+ })()
 }
+async function openCam(){
+ $("cam").classList.add("on");$("cs").textContent="Hold 15-20 cm away, in good light. Keep the QR inside the box.";
+ try{
+  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}},audio:false});
+  const v=$("vd");v.srcObject=stream;await v.play();
+  try{const t=stream.getVideoTracks()[0],cp=t.getCapabilities&&t.getCapabilities();if(cp&&cp.focusMode&&cp.focusMode.includes("continuous"))await t.applyConstraints({advanced:[{focusMode:"continuous"}]})}catch(e){}
+  const c=document.createElement("canvas"),x=c.getContext("2d",{willReadFrequently:true});
+  let last=0;
+  const tick=async t=>{
+   if(!stream)return;
+   if(t-last>150&&v.readyState>=2&&v.videoWidth){
+    last=t;
+    const s=Math.min(1,1280/v.videoWidth);c.width=Math.round(v.videoWidth*s);c.height=Math.round(v.videoHeight*s);
+    x.drawImage(v,0,0,c.width,c.height);
+    const val=await findQR(c,c.width,c.height,x);
+    if(val&&stream){got(val);return}
+   }
+   if(stream)raf=requestAnimationFrame(tick)};
+  raf=requestAnimationFrame(tick);
+ }catch(e){$("cs").textContent="Camera unavailable. Use a photo or type the card code below."}
+}
+$("ph").onchange=async e=>{
+ const f=e.target.files[0];if(!f)return;$("cs").textContent="Reading photo...";
+ try{
+  const bm=await createImageBitmap(f),s=Math.min(1,1280/Math.max(bm.width,bm.height)),c=document.createElement("canvas");
+  c.width=Math.round(bm.width*s);c.height=Math.round(bm.height*s);
+  const x=c.getContext("2d",{willReadFrequently:true});x.drawImage(bm,0,0,c.width,c.height);
+  const val=await findQR(c,c.width,c.height,x);
+  if(val)got(val);else $("cs").textContent="QR not found in photo. Try closer, with good light."
+ }catch(er){$("cs").textContent="Could not read the photo."}
+ e.target.value="";
+};
 $("sc").onclick=openCam;$("sc").onkeydown=e=>{if(e.key==="Enter")openCam()};
 $("cc").onclick=stop;
 $("mok").onclick=()=>{const v=$("man").value;if(v.trim())got(v)};
@@ -178,4 +204,4 @@ $("f").onsubmit=async e=>{
 view();
 </script>
 </body>
-  </html>
+ </html>
