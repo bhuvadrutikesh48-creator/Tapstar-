@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tapstar – Activate Your Card</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<style>
+:root{--bg:#1e2533;--card:#fff;--ink:#1d2a3d;--mut:#8a94a6;--line:#d5dbe6;--pri:#0a84c6;--pri2:#066aa3;--soft:#e8f4fd;--hd:#0f1c33;--err:#d93025;--ok:#1a9d57;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1420;--card:#18202f;--ink:#e8edf6;--mut:#8f9bb0;--line:#2c374b;--soft:#14273a;--hd:#0b1424}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);min-height:100vh;display:flex;align-items:flex-end;justify-content:center}
+.wrap{width:100%;max-width:480px;margin:auto 0 0}
+@media(min-width:600px){body{align-items:center}.wrap{margin:24px 0}}
+.sheet{background:var(--card);border-radius:28px 28px 0 0;overflow:hidden}
+@media(min-width:600px){.sheet{border-radius:28px}}
+.hd{background:var(--hd);color:#fff;padding:20px 20px;display:flex;gap:14px;align-items:center}
+.logo{width:50px;height:50px;border-radius:14px;background:#0e3a5c;border:1px solid #1d6a9c;display:grid;place-items:center;font-size:26px;flex:none}
+.hd h1{margin:0;font-size:22px}
+.hd p{margin:2px 0 0;font-size:14px;color:#b6c3d8}
+form{padding:20px 20px 24px}
+label.l{display:flex;align-items:center;gap:8px;font-weight:600;margin:16px 0 8px}
+label.l i{font-style:normal}
+.req{color:var(--err)}
+input[type=email],input[type=password],input[type=text],select{width:100%;padding:16px;font-size:16px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);outline:none}
+input:focus,select:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(10,132,198,.18)}
+.pw{position:relative}.pw button{position:absolute;right:8px;top:8px;border:0;background:none;font-size:20px;padding:8px;cursor:pointer}
+.scan{display:flex;align-items:center;gap:14px;border:2px dashed var(--pri);background:var(--soft);border-radius:16px;padding:16px;cursor:pointer}
+.scan .ic{width:54px;height:54px;border-radius:50%;background:var(--pri);color:#fff;display:grid;place-items:center;font-size:24px;flex:none}
+.scan b{color:var(--pri);font-size:19px;display:block}.scan span{color:var(--mut);font-size:14px}
+.scan .btn{margin-left:auto;background:var(--card);color:var(--pri);border-radius:22px;padding:12px 14px;font-weight:600;text-align:center;font-size:14px}
+.scan.done{border-style:solid;border-color:var(--ok)}.scan.done .ic{background:var(--ok)}
+.terms{display:flex;gap:10px;align-items:center;margin:22px 0 18px;font-size:14px}
+.terms input{width:24px;height:24px;flex:none}
+a{color:var(--pri)}
+.sub{width:100%;border:0;border-radius:16px;padding:18px;font-size:18px;font-weight:700;color:#fff;background:linear-gradient(180deg,var(--pri),var(--pri2));cursor:pointer;box-shadow:0 8px 20px rgba(10,132,198,.3)}
+.sub:disabled{opacity:.6}
+.msg{margin-top:14px;font-size:14px;text-align:center;min-height:18px}.msg.e{color:var(--err)}
+.ok{padding:48px 24px;text-align:center}.ok .tick{width:80px;height:80px;border-radius:50%;background:var(--ok);color:#fff;font-size:44px;display:grid;place-items:center;margin:0 auto 18px}
+.ok button{margin-top:20px;background:none;border:1px solid var(--line);color:var(--ink);padding:12px 20px;border-radius:12px;font-size:15px}
+.cam{position:fixed;inset:0;background:#000;display:none;z-index:9;flex-direction:column}
+.cam.on{display:flex}.cam video{flex:1;width:100%;object-fit:cover;min-height:0}
+.cam .bar{padding:16px;color:#fff;text-align:center;background:#000}
+.cam .frame{position:absolute;left:50%;top:40%;width:62vmin;height:62vmin;transform:translate(-50%,-50%);border:3px solid #fff;border-radius:20px;box-shadow:0 0 0 100vmax rgba(0,0,0,.45)}
+.cam button{margin-top:10px;background:#fff;border:0;border-radius:12px;padding:12px 22px;font-size:16px}
+.cam .alt{display:flex;gap:8px;margin:12px auto 0;max-width:360px}.cam .alt input{padding:12px}.cam .alt button{margin:0}
+.out{margin-left:auto;background:none;border:1px solid #3a4a66;color:#b6c3d8;border-radius:10px;padding:8px 12px;font-size:13px;display:none;cursor:pointer}
+#f{display:none}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="sheet" id="sheet">
+ <div class="hd"><div class="logo">⭐</div><div><h1>Tapstar Card Setup</h1><p>Connect your card to your social link</p></div><button class="out" id="out" type="button">Logout</button></div>
+ <form id="lf" novalidate>
+  <h2 style="margin:4px 0 0">Admin Login</h2>
+  <p style="color:var(--mut);margin:6px 0 0;font-size:14px">Only Tapstar owner can activate cards.</p>
+  <label class="l"><i>✉️</i>Email</label>
+  <input type="email" id="lem" autocomplete="username" placeholder="Your email">
+  <label class="l"><i>🔑</i>Password</label>
+  <input type="password" id="lpw" autocomplete="current-password" placeholder="Password">
+  <div style="height:22px"></div>
+  <button class="sub" id="lsub" type="submit">Login</button>
+  <div class="msg" id="lmsg"></div>
+ </form>
+ <form id="f" novalidate>
+  <label class="l"><i>✉️</i>Email Address <span class="req">*</span></label>
+  <input type="email" id="em" placeholder="e.g. name@example.com" autocomplete="email">
+
+  <label class="l"><i>🔑</i>Password <span class="req">*</span></label>
+  <div class="pw"><input type="password" id="pw" placeholder="Create a password (min 6 characters)" autocomplete="new-password"><button type="button" id="eye" aria-label="Show password">👁</button></div>
+
+  <label class="l"><i>🔗</i>Select Platform <span class="req">*</span></label>
+  <select id="pl">
+   <option value="Google Review">Google Review</option>
+   <option value="Facebook Page">Facebook Page</option>
+   <option value="Instagram Page">Instagram Page</option>
+   <option value="WhatsApp">WhatsApp (number)</option>
+   <option value="YouTube">YouTube Channel</option>
+   <option value="TikTok">TikTok</option>
+   <option value="LinkedIn">LinkedIn</option>
+   <option value="Website">Website</option>
+   <option value="Phone">Phone Number</option>
+  </select>
+
+  <label class="l"><i>🌐</i>Link or Number <span class="req">*</span></label>
+  <input type="text" id="ln" placeholder="ex: https://g.page/review" inputmode="url">
+
+  <label class="l"><i>▦</i>Scan Card QR <span class="req">*</span></label>
+  <div class="scan" id="sc" role="button" tabindex="0">
+   <div class="ic">📷</div><div><b id="st">Scan QR Code</b><span id="ss">Tap here to open camera &amp; scan your card</span></div><div class="btn" id="sb">Open<br>Camera</div>
+  </div>
+
+  <label class="terms"><input type="checkbox" id="tc"><span>I agree to the <a href="#terms">Terms &amp; Conditions</a> and <a href="#privacy">Privacy Policy</a> <span class="req">*</span></span></label>
+  <button class="sub" id="sub" type="submit">✓ Submit</button>
+  <div class="msg" id="msg"></div>
+ </form>
+</div></div>
+
+<div class="cam" id="cam">
+ <video id="vd" playsinline muted></video><div class="frame"></div>
+ <div class="bar"><div id="cs">Point the camera at your Tapstar card QR</div>
+  <div class="alt"><input type="text" id="man" placeholder="Or type the card code"><button type="button" id="mok">Use</button></div>
+  <button type="button" id="cc">Cancel</button></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let qr="",stream=null,raf=0;
+// ===== SUPABASE CONFIG (Project Settings > API) =====
+const SB_URL="https://dmwdsqrcncsaoppsrduh.supabase.co";
+const SB_KEY="sb_publishable_lPUAHCljOxJaoNR_aEfuIQ_Iu5wys7D";
+let TOKEN=null;try{TOKEN=sessionStorage.getItem("ts_tok")}catch(e){}
+function view(){$("lf").style.display=TOKEN?"none":"block";$("f").style.display=TOKEN?"block":"none";$("out").style.display=TOKEN?"block":"none"}
+function logout(){TOKEN=null;try{sessionStorage.removeItem("ts_tok")}catch(e){}view()}
+$("out").onclick=logout;
+$("lf").onsubmit=async e=>{
+ e.preventDefault();const m=$("lmsg");m.className="msg";m.textContent="";$("lsub").disabled=true;
+ try{
+  const r=await fetch(SB_URL+"/auth/v1/token?grant_type=password",{method:"POST",headers:{"Content-Type":"application/json",apikey:SB_KEY},body:JSON.stringify({email:$("lem").value.trim(),password:$("lpw").value})});
+  const d=await r.json();
+  if(!r.ok||!d.access_token)throw 0;
+  TOKEN=d.access_token;try{sessionStorage.setItem("ts_tok",TOKEN)}catch(x){}
+  $("lpw").value="";view();
+ }catch(x){m.className="msg e";m.textContent="Wrong email or password."}
+ $("lsub").disabled=false;
+};
+async function rpc(fn,body){
+ const r=await fetch(SB_URL+"/rest/v1/rpc/"+fn,{method:"POST",headers:Object.assign({"Content-Type":"application/json",apikey:SB_KEY},TOKEN?{Authorization:"Bearer "+TOKEN}:{}),body:JSON.stringify(body)});
+ if(r.status===401){logout();throw new Error("SESSION_EXPIRED")}
+ if(!r.ok){let m="";try{m=(await r.json()).message||""}catch(e){}throw new Error(m||"SERVER_ERROR")}
+}
+function say(t,e){const m=$("msg");m.textContent=t;m.className="msg"+(e?" e":"")}
+
+// platform hints
+const hints={"Google Review":"ex: https://g.page/review","Facebook Page":"ex: https://facebook.com/yourpage","Instagram Page":"ex: https://instagram.com/yourname","WhatsApp":"ex: +60123456789","YouTube":"ex: https://youtube.com/@channel","TikTok":"ex: https://tiktok.com/@name","LinkedIn":"ex: https://linkedin.com/in/name","Website":"ex: https://yourwebsite.com","Phone":"ex: +60123456789"};
+$("pl").onchange=()=>{$("ln").placeholder=hints[$("pl").value]};
+$("eye").onclick=()=>{const p=$("pw");p.type=p.type==="password"?"text":"password"};
+
+// camera
+function stop(){cancelAnimationFrame(raf);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$("cam").classList.remove("on")}
+function got(v){qr=v.trim();$("sc").classList.add("done");$("st").textContent="QR scanned ✓";$("ss").textContent=qr.length>34?qr.slice(0,34)+"…":qr;$("sb").innerHTML="Scan<br>Again";stop()}
+async function openCam(){
+ $("cam").classList.add("on");$("cs").textContent="Point the camera at your Tapstar card QR";
+ try{
+  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}}});
+  const v=$("vd");v.srcObject=stream;await v.play();
+  const c=document.createElement("canvas"),x=c.getContext("2d",{willReadFrequently:true});
+  const tick=()=>{
+   if(v.readyState>=2){c.width=v.videoWidth;c.height=v.videoHeight;x.drawImage(v,0,0);
+    const d=x.getImageData(0,0,c.width,c.height),r=window.jsQR&&jsQR(d.data,d.width,d.height);
+    if(r&&r.data){got(r.data);return}}
+   raf=requestAnimationFrame(tick)};
+  tick();
+ }catch(e){$("cs").textContent="Camera unavailable. Type the card code below."}
+}
+$("sc").onclick=openCam;$("sc").onkeydown=e=>{if(e.key==="Enter")openCam()};
+$("cc").onclick=stop;
+$("mok").onclick=()=>{const v=$("man").value;if(v.trim())got(v)};
+
+// submit
+$("f").onsubmit=async e=>{
+ e.preventDefault();say("");
+ const em=$("em").value.trim().toLowerCase(),pw=$("pw").value,pl=$("pl").value,ln=$("ln").value.trim();
+ if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))return say("Enter a valid email address.",1);
+ if(pw.length<6)return say("Password must be at least 6 characters.",1);
+ if(!ln)return say("Enter your link or number.",1);
+ if(pl!=="WhatsApp"&&pl!=="Phone"&&!/^https?:\/\//i.test(ln))return say("Link must start with https://",1);
+ if(!qr)return say("Please scan your card QR code.",1);
+ if(!$("tc").checked)return say("Please accept the Terms & Privacy Policy.",1);
+ $("sub").disabled=true;
+ try{await rpc("activate_card",{p_code:qr,p_email:em,p_password:pw,p_platform:pl,p_link:ln})}
+ catch(err){$("sub").disabled=false;
+  return say(err.message.includes("QR_ALREADY_ACTIVATED")?"This QR card is already activated. It is locked to one email.":err.message.includes("NOT_ADMIN")?"This account is not allowed to activate cards.":err.message==="SESSION_EXPIRED"?"Session expired. Please login again.":"Could not activate. Check your connection and try again.",1)}
+ $("sub").disabled=false;
+ $("sheet").innerHTML='<div class="hd"><div class="logo">⭐</div><div><h1>Tapstar</h1><p>Card activation</p></div></div><div class="ok"><div class="tick">✓</div><h2>Card Activated!</h2><p>Your card is now linked to your <b>'+pl.replace(/</g,"")+'</b>.<br>Tap it on any phone to open your link.</p><button onclick="location.reload()">Activate another card</button></div>';
+};
+view();
+</script>
+</body>
+  </html>
