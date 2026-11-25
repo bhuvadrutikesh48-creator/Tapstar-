@@ -1,343 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tapstar – Activate Your Card</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tapstar Card Setup</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#1e2533;--card:#fff;--ink:#1d2a3d;--mut:#8a94a6;--line:#d5dbe6;--pri:#0a84c6;--pri2:#066aa3;--soft:#e8f4fd;--hd:#0f1c33;--err:#d93025;--ok:#1a9d57;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1420;--card:#18202f;--ink:#e8edf6;--mut:#8f9bb0;--line:#2c374b;--soft:#14273a;--hd:#0b1424}}
-*{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);min-height:100vh;display:flex;align-items:flex-end;justify-content:center}
-.wrap{width:100%;max-width:480px;margin:auto 0 0}
-@media(min-width:600px){body{align-items:center}.wrap{margin:24px 0}}
-.sheet{background:var(--card);border-radius:28px 28px 0 0;overflow:hidden}
-@media(min-width:600px){.sheet{border-radius:28px}}
-.hd{background:var(--hd);color:#fff;padding:20px;display:flex;gap:14px;align-items:center}
-.logo{width:50px;height:50px;border-radius:14px;background:#0e3a5c;border:1px solid #1d6a9c;display:grid;place-items:center;font-size:26px;flex:none}
-.hd h1{margin:0;font-size:22px}
-.hd p{margin:2px 0 0;font-size:14px;color:#b6c3d8}
-form{padding:20px 20px 24px}
-label.l{display:flex;align-items:center;gap:8px;font-weight:600;margin:16px 0 8px}
-label.l i{font-style:normal}
-.req{color:var(--err)}
-input[type=email],input[type=password],input[type=text],select{width:100%;padding:16px;font-size:16px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);outline:none}
-input:focus,select:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(10,132,198,.18)}
-.pw{position:relative}
-.pw button{position:absolute;right:8px;top:8px;border:0;background:none;font-size:20px;padding:8px;cursor:pointer}
-.scan{display:flex;align-items:center;gap:14px;border:2px dashed var(--pri);background:var(--soft);border-radius:16px;padding:16px;cursor:pointer}
-.scan .ic{width:54px;height:54px;border-radius:50%;background:var(--pri);color:#fff;display:grid;place-items:center;font-size:24px;flex:none}
-.scan b{color:var(--pri);font-size:19px;display:block}
-.scan span{color:var(--mut);font-size:14px}
-.scan .btn{margin-left:auto;background:var(--card);color:var(--pri);border-radius:22px;padding:12px 14px;font-weight:600;text-align:center;font-size:14px}
-.scan.done{border-style:solid;border-color:var(--ok)}
-.scan.done .ic{background:var(--ok)}
-.terms{display:flex;gap:10px;align-items:center;margin:22px 0 18px;font-size:14px}
-.terms input{width:24px;height:24px;flex:none}
-a{color:var(--pri)}
-.sub{width:100%;border:0;border-radius:16px;padding:18px;font-size:18px;font-weight:700;color:#fff;background:linear-gradient(180deg,var(--pri),var(--pri2));cursor:pointer;box-shadow:0 8px 20px rgba(10,132,198,.3)}
-.sub:disabled{opacity:.6}
-.msg{margin-top:14px;font-size:14px;text-align:center;min-height:18px}
-.msg.e{color:var(--err)}
-.ok{padding:48px 24px;text-align:center}
-.ok .tick{width:80px;height:80px;border-radius:50%;background:var(--ok);color:#fff;font-size:44px;display:grid;place-items:center;margin:0 auto 18px}
-.ok button{margin-top:20px;background:none;border:1px solid var(--line);color:var(--ink);padding:12px 20px;border-radius:12px;font-size:15px}
-.cam{position:fixed;inset:0;background:#000;display:none;z-index:9;flex-direction:column}
-.cam.on{display:flex}
-.cam video{flex:1;width:100%;object-fit:cover;min-height:0}
-.cam .bar{padding:16px;color:#fff;text-align:center;background:#000}
-.cam .frame{position:absolute;left:50%;top:40%;width:62vmin;height:62vmin;transform:translate(-50%,-50%);border:3px solid #fff;border-radius:20px;box-shadow:0 0 0 100vmax rgba(0,0,0,.45)}
-.cam button{margin-top:10px;background:#fff;border:0;border-radius:12px;padding:12px 22px;font-size:16px}
-.ph{display:inline-block;margin-top:10px;background:#fff;color:#000;border-radius:12px;padding:12px 22px;font-size:16px;cursor:pointer}
-.cam .alt{display:flex;gap:8px;margin:12px auto 0;max-width:360px}
-.cam .alt input{padding:12px}
-.cam .alt button{margin:0}
-.out{margin-left:auto;background:none;border:1px solid #3a4a66;color:#b6c3d8;border-radius:10px;padding:8px 12px;font-size:13px;display:none;cursor:pointer}
-#f{display:none}
+  :root { --navy:#0b1d3a; --blue:#1d6ff2; --ink:#14213d; --muted:#6b7a90; --line:#d8e0ec; --red:#e5384f; --green:#1fa971; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; min-height:100%; background:var(--navy); font-family:'Poppins',system-ui,sans-serif; color:var(--ink); }
+  body { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:16px; }
+  .ring { width:44px; height:44px; border:3px solid #ffffff33; border-top-color:#fff; border-radius:50%; animation:spin .8s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .modal { background:#fff; width:100%; max-width:380px; border-radius:16px; padding:20px; box-shadow:0 20px 50px #0008; display:none; }
+  .head { display:flex; gap:12px; align-items:center; margin-bottom:16px; }
+  .logo { width:38px; height:38px; border-radius:10px; background:var(--blue); color:#fff; display:grid; place-items:center; font-weight:600; }
+  .head h1 { font-size:17px; margin:0; font-weight:600; }
+  .head p { margin:0; font-size:12px; color:var(--muted); }
+  label { display:block; font-size:12px; font-weight:500; margin:12px 0 5px; }
+  input[type=email],input[type=password],input[type=text],select {
+    width:100%; padding:11px 12px; border:1.5px solid var(--line); border-radius:10px; font:inherit; font-size:14px; background:#fff; color:var(--ink);
+  }
+  input:focus,select:focus,button:focus-visible { outline:2px solid var(--blue); outline-offset:1px; }
+  .scan { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; padding:10px 12px; background:#eef4ff; border-radius:10px; font-size:12px; }
+  .scan b { display:block; font-size:13px; }
+  .scan span { color:var(--muted); }
+  .btn-small { border:0; background:var(--blue); color:#fff; padding:8px 12px; border-radius:8px; font:inherit; font-size:12px; font-weight:500; cursor:pointer; white-space:nowrap; }
+  #reader { margin-top:10px; border-radius:10px; overflow:hidden; display:none; }
+  .terms { display:flex; gap:8px; align-items:flex-start; font-size:12px; color:var(--muted); margin-top:14px; }
+  .terms input { margin-top:2px; }
+  .submit { width:100%; margin-top:16px; padding:13px; border:0; border-radius:10px; background:var(--blue); color:#fff; font:inherit; font-size:15px; font-weight:600; cursor:pointer; }
+  .submit:disabled { opacity:.6; }
+  .done { text-align:center; padding:12px 0 4px; }
+  .tick { width:56px; height:56px; border-radius:50%; background:#e3f6ee; color:var(--green); display:grid; place-items:center; font-size:28px; margin:0 auto 12px; }
+  .done h2 { margin:0 0 6px; font-size:18px; }
+  .done p { margin:0 0 16px; font-size:13px; color:var(--muted); }
+  .done a { display:block; text-decoration:none; text-align:center; }
+  .msg { color:#fff; text-align:center; font-size:14px; max-width:300px; }
+  #toast { position:fixed; left:16px; right:16px; bottom:20px; max-width:380px; margin:0 auto; padding:12px 14px; border-radius:10px; color:#fff; font-size:13px; font-weight:500; text-align:center; display:none; }
 </style>
 </head>
 <body>
-<div class="wrap"><div class="sheet" id="sheet">
- <div class="hd"><div class="logo">⭐</div><div><h1>Tapstar Card Setup</h1><p>Connect your card to your social link</p></div><button class="out" id="out" type="button">Logout</button></div>
- <form id="lf" novalidate>
-  <h2 style="margin:4px 0 0">Admin Login</h2>
-  <p style="color:var(--mut);margin:6px 0 0;font-size:14px">Only Tapstar owner can activate cards.</p>
-  <label class="l"><i>✉️</i>Email</label>
-  <input type="email" id="lem" autocomplete="username" placeholder="Your email">
-  <label class="l"><i>🔑</i>Password</label>
-  <input type="password" id="lpw" autocomplete="current-password" placeholder="Password">
-  <div style="height:22px"></div>
-  <button class="sub" id="lsub" type="submit">Login</button>
-  <div class="msg" id="lmsg"></div>
- </form>
- <form id="f" novalidate>
-  <label class="l"><i>✉️</i>Email Address <span class="req">*</span></label>
-  <input type="email" id="em" placeholder="e.g. name@example.com" autocomplete="email">
-  <label class="l"><i>🔑</i>Password <span class="req">*</span></label>
-  <div class="pw"><input type="password" id="pw" placeholder="Create a password (min 6 characters)" autocomplete="new-password"><button type="button" id="eye" aria-label="Show password">👁</button></div>
-  <label class="l"><i>🔗</i>Select Platform <span class="req">*</span></label>
-  <select id="pl">
-   <option value="Google Review">Google Review</option>
-   <option value="Facebook Page">Facebook Page</option>
-   <option value="Instagram Page">Instagram Page</option>
-   <option value="WhatsApp">WhatsApp (number)</option>
-   <option value="YouTube">YouTube Channel</option>
-   <option value="TikTok">TikTok</option>
-   <option value="LinkedIn">LinkedIn</option>
-   <option value="Website">Website</option>
-   <option value="Phone">Phone Number</option>
-  </select>
-  <label class="l"><i>🌐</i>Link or Number <span class="req">*</span></label>
-  <input type="text" id="ln" placeholder="ex: https://g.page/review" inputmode="url">
-  <label class="l"><i>▦</i>Scan Card QR <span class="req">*</span></label>
-  <div class="scan" id="sc" role="button" tabindex="0">
-   <div class="ic">📷</div><div><b id="st">Scan QR Code</b><span id="ss">Tap here to open camera &amp; scan your card</span></div><div class="btn" id="sb">Open<br>Camera</div>
+
+<div id="loading" class="ring" role="status" aria-label="Loading"></div>
+<p id="problem" class="msg" style="display:none"></p>
+
+<form id="form" class="modal" novalidate>
+  <div class="head">
+    <div class="logo">T</div>
+    <div><h1>Social Card Setup</h1><p>Connect your card to your link</p></div>
   </div>
-  <label class="terms"><input type="checkbox" id="tc"><span>I agree to the <a href="#terms">Terms &amp; Conditions</a> and <a href="#privacy">Privacy Policy</a> <span class="req">*</span></span></label>
-  <button class="sub" id="sub" type="submit">✓ Submit</button>
-  <div class="msg" id="msg"></div>
- </form>
-</div></div>
-<div class="cam" id="cam">
- <video id="vd" playsinline muted></video><div class="frame"></div>
- <div class="bar"><div id="cs">Point the camera at your Tapstar card QR</div>
-  <div class="alt"><input type="text" id="man" placeholder="Or type the card code"><button type="button" id="mok">Use</button></div>
-  <label class="ph">📸 Scan from photo<input type="file" id="ph" accept="image/*" capture="environment" hidden></label><br><button type="button" id="cc">Cancel</button></div>
+
+  <label for="email">Email address</label>
+  <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+
+  <label for="password">Password (needed to change or delete later)</label>
+  <input id="password" type="password" placeholder="At least 6 characters" autocomplete="new-password">
+
+  <label for="platform">Select platform</label>
+  <select id="platform">
+    <option value="">Choose one</option>
+    <option>Google Review</option>
+    <option>Instagram</option>
+    <option>Facebook</option>
+    <option>YouTube</option>
+    <option>WhatsApp</option>
+    <option>Website</option>
+    <option>Phone number</option>
+    <option>Other</option>
+  </select>
+
+  <label for="link">Link or number</label>
+  <input id="link" type="text" placeholder="Paste your link or phone number" inputmode="url" autocapitalize="none">
+
+  <div class="scan">
+    <div><b>Scan QR code</b><span>Point your camera at a QR to fill the link</span></div>
+    <button type="button" class="btn-small" id="scanBtn">Scan</button>
+  </div>
+  <div id="reader"></div>
+
+  <div class="terms">
+    <input type="checkbox" id="terms">
+    <label for="terms" style="margin:0;font-weight:400">I agree to the Terms and Conditions and Privacy Policy</label>
+  </div>
+
+  <button class="submit" id="submitBtn" type="submit">Activate card</button>
+</form>
+
+<div id="success" class="modal">
+  <div class="done">
+    <div class="tick">✓</div>
+    <h2>Card activated!</h2>
+    <p>Your card is ready. From now on, every scan opens your link.</p>
+    <a class="submit" id="openLink" href="#">Open my link</a>
+  </div>
 </div>
+
+<div id="toast" role="alert"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <script>
-const $=id=>document.getElementById(id);
-let qr="",stream=null,raf=0;
-const SB_URL="https://dmwdsqrcncsaoppsrduh.supabase.co";
-const SB_KEY="sb_publishable_lPUAHCljOxJaoNR_aEfuIQ_Iu5wys7D";
-let TOKEN=null;
-try{TOKEN=sessionStorage.getItem("ts_tok")}catch(e){}
+// ====== 1. PASTE YOUR TWO SUPABASE VALUES HERE ======
+const SUPABASE_URL = "PASTE_PROJECT_URL_HERE";   // e.g. https://abcd1234.supabase.co
+const SUPABASE_KEY = "PASTE_ANON_PUBLIC_KEY_HERE";
+// ====================================================
 
-function view(){
- $("lf").style.display=TOKEN?"none":"block";
- $("f").style.display=TOKEN?"block":"none";
- $("out").style.display=TOKEN?"block":"none";
-}
-function logout(){
- TOKEN=null;
- try{sessionStorage.removeItem("ts_tok")}catch(e){}
- view();
-}
-$("out").onclick=logout;
+const $ = id => document.getElementById(id);
+const cardId = decodeURIComponent(location.search.replace(/^\?/, "").replace(/^id=/i, "")).trim();
 
-$("lf").onsubmit=async e=>{
- e.preventDefault();
- const m=$("lmsg");
- m.className="msg";m.textContent="";$("lsub").disabled=true;
- try{
-  const r=await fetch(SB_URL+"/auth/v1/token?grant_type=password",{
-   method:"POST",
-   headers:{"Content-Type":"application/json",apikey:SB_KEY},
-   body:JSON.stringify({email:$("lem").value.trim(),password:$("lpw").value})
+async function rpc(fn, args) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    body: JSON.stringify(args)
   });
-  const d=await r.json();
-  if(!r.ok||!d.access_token)throw new Error("LOGIN_FAILED");
-  TOKEN=d.access_token;
-  try{sessionStorage.setItem("ts_tok",TOKEN)}catch(x){}
-  $("lpw").value="";
-  view();
- }catch(x){
-  m.className="msg e";m.textContent="Wrong email or password.";
- }
- $("lsub").disabled=false;
-};
-
-async function rpc(fn,body){
- const r=await fetch(SB_URL+"/rest/v1/rpc/"+fn,{
-  method:"POST",
-  headers:Object.assign({"Content-Type":"application/json",apikey:SB_KEY},TOKEN?{Authorization:"Bearer "+TOKEN}:{}),
-  body:JSON.stringify(body)
- });
- if(r.status===401){logout();throw new Error("SESSION_EXPIRED")}
- if(!r.ok){
-  let m="";
-  try{m=(await r.json()).message||""}catch(e){}
-  throw new Error(m||"SERVER_ERROR");
- }
- return r.json().catch(()=>null);
-}
-function say(t,e){
- const m=$("msg");m.textContent=t;m.className="msg"+(e?" e":"");
+  if (!r.ok) throw new Error("Server error " + r.status);
+  return r.json();
 }
 
-// QR content may be a raw code or a Tapstar URL containing ?c=GREV-001.
-function extractCardCode(value){
- const raw=String(value||"").trim();
- if(!raw)return "";
- try{
-  const u=new URL(raw);
-  const queryCode=u.searchParams.get("c");
-  if(queryCode)return queryCode.trim();
-  const parts=u.pathname.split("/").filter(Boolean);
-  const last=parts[parts.length-1]||"";
-  if(/\.html?$/i.test(last))return "";
-  return last.trim();
- }catch(e){
-  return raw;
- }
+function normalize(v) {
+  v = v.trim();
+  if (/^\+?[\d\s-]{7,}$/.test(v)) return "tel:" + v.replace(/[\s-]/g, "");
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(v)) return "https://" + v;
+  return v;
 }
 
-const hints={
- "Google Review":"ex: https://g.page/review",
- "Facebook Page":"ex: https://facebook.com/yourpage",
- "Instagram Page":"ex: https://instagram.com/yourname",
- "WhatsApp":"ex: +60123456789",
- "YouTube":"ex: https://youtube.com/@channel",
- "TikTok":"ex: https://tiktok.com/@name",
- "LinkedIn":"ex: https://linkedin.com/in/name",
- "Website":"ex: https://yourwebsite.com",
- "Phone":"ex: +60123456789"
-};
-$("pl").onchange=()=>{$("ln").placeholder=hints[$("pl").value]};
-$("eye").onclick=()=>{
- const p=$("pw");p.type=p.type==="password"?"text":"password";
-};
+async function sha256(text) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(cardId + ":" + text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
 
-function stop(){
- cancelAnimationFrame(raf);
- if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
- $("vd").srcObject=null;
- $("cam").classList.remove("on");
+function toast(text, color) {
+  const t = $("toast");
+  t.textContent = text; t.style.background = color || "var(--red)"; t.style.display = "block";
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.style.display = "none", 3500);
 }
-function got(v){
- qr=String(v||"").trim();
- $("sc").classList.add("done");
- $("st").textContent="QR scanned ✓";
- $("ss").textContent=qr.length>34?qr.slice(0,34)+"…":qr;
- $("sb").innerHTML="Scan<br>Again";
- stop();
+
+function problem(text) {
+  $("loading").style.display = "none";
+  $("problem").textContent = text; $("problem").style.display = "block";
 }
-async function findQR(src,w,h,ctx){
- try{
-  if("BarcodeDetector" in window){
-   const detector=new BarcodeDetector({formats:["qr_code"]});
-   const results=await detector.detect(src);
-   if(results.length)return results[0].rawValue;
+
+async function start() {
+  if (!cardId) return problem("Card ID is missing. Please scan your card again.");
+  try {
+    const link = await rpc("get_card_link", { card_id: cardId });
+    if (link) { location.replace(link); return; }   // already activated: go straight to the link
+    $("loading").style.display = "none";
+    $("form").style.display = "block";
+  } catch (e) {
+    problem("Could not connect. Check your internet and scan again.");
   }
- }catch(e){}
- if(window.jsQR){
-  try{
-   const d=ctx.getImageData(0,0,w,h);
-   const r=jsQR(d.data,w,h,{inversionAttempts:"attemptBoth"});
-   if(r&&r.data)return r.data;
-  }catch(e){}
- }
- return "";
 }
-async function openCam(){
- $("cam").classList.add("on");
- $("cs").textContent="Hold 15-20 cm away, in good light. Keep the QR inside the box.";
- try{
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error("NO_CAMERA");
-  stream=await navigator.mediaDevices.getUserMedia({
-   video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}},
-   audio:false
-  });
-  const v=$("vd");v.srcObject=stream;await v.play();
-  try{
-   const t=stream.getVideoTracks()[0],cp=t.getCapabilities&&t.getCapabilities();
-   if(cp&&cp.focusMode&&cp.focusMode.includes("continuous")){
-    await t.applyConstraints({advanced:[{focusMode:"continuous"}]});
-   }
-  }catch(e){}
-  const c=document.createElement("canvas"),x=c.getContext("2d",{willReadFrequently:true});
-  let last=0;
-  const tick=async t=>{
-   if(!stream)return;
-   if(t-last>150&&v.readyState>=2&&v.videoWidth){
-    last=t;
-    const s=Math.min(1,1280/v.videoWidth);
-    c.width=Math.round(v.videoWidth*s);c.height=Math.round(v.videoHeight*s);
-    x.drawImage(v,0,0,c.width,c.height);
-    const val=await findQR(c,c.width,c.height,x);
-    if(val&&stream){got(val);return}
-   }
-   if(stream)raf=requestAnimationFrame(tick);
-  };
-  raf=requestAnimationFrame(tick);
- }catch(e){
-  $("cs").textContent="Camera unavailable. Use a photo or type the card code below.";
- }
+
+$("form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const email = $("email").value.trim(), pass = $("password").value, platform = $("platform").value, link = $("link").value.trim();
+  if (!email || !/^\S+@\S+\.\S+$/.test(email) || pass.length < 6 || !platform || !link || !$("terms").checked)
+    return toast("Please fill all required fields");
+  $("submitBtn").disabled = true;
+  try {
+    const finalLink = normalize(link);
+    const ok = await rpc("activate_card", { card_id: cardId, p_email: email, p_hash: await sha256(pass), p_platform: platform, p_link: finalLink });
+    if (!ok) { $("submitBtn").disabled = false; return toast("This card is already activated"); }
+    $("form").style.display = "none";
+    $("openLink").href = finalLink;
+    $("success").style.display = "block";
+  } catch (err) {
+    $("submitBtn").disabled = false;
+    toast("Something went wrong. Please try again.");
+  }
+});
+
+// QR scanner
+let scanner = null;
+async function stopScan() {
+  if (scanner) { try { await scanner.stop(); } catch (_) {} scanner = null; }
+  $("reader").style.display = "none"; $("scanBtn").textContent = "Scan";
 }
-$("ph").onchange=async e=>{
- const f=e.target.files[0];if(!f)return;
- $("cs").textContent="Reading photo...";
- try{
-  const bm=await createImageBitmap(f);
-  const s=Math.min(1,1280/Math.max(bm.width,bm.height));
-  const c=document.createElement("canvas");
-  c.width=Math.round(bm.width*s);c.height=Math.round(bm.height*s);
-  const x=c.getContext("2d",{willReadFrequently:true});
-  x.drawImage(bm,0,0,c.width,c.height);
-  const val=await findQR(c,c.width,c.height,x);
-  if(val)got(val);
-  else $("cs").textContent="QR not found in photo. Try closer, with good light.";
- }catch(er){
-  $("cs").textContent="Could not read the photo.";
- }
- e.target.value="";
-};
-$("sc").onclick=openCam;
-$("sc").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openCam()}};
-$("cc").onclick=stop;
-$("mok").onclick=()=>{
- const v=$("man").value;
- if(v.trim())got(v);
-};
+$("scanBtn").addEventListener("click", async () => {
+  if (scanner) return stopScan();
+  $("reader").style.display = "block"; $("scanBtn").textContent = "Stop";
+  scanner = new Html5Qrcode("reader");
+  try {
+    await scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 220 }, text => {
+      $("link").value = text; stopScan(); toast("QR scanned", "var(--green)");
+    });
+  } catch (err) { stopScan(); toast("Camera not available. Allow camera permission."); }
+});
 
-// Submit activation
-$("f").onsubmit=async e=>{
- e.preventDefault();say("");
- const em=$("em").value.trim().toLowerCase();
- const pw=$("pw").value;
- const pl=$("pl").value;
- const ln=$("ln").value.trim();
-
- if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))return say("Enter a valid email address.",1);
- if(pw.length<6)return say("Password must be at least 6 characters.",1);
- if(!ln)return say("Enter your link or number.",1);
- if(pl!=="WhatsApp"&&pl!=="Phone"&&!/^https?:\/\//i.test(ln))return say("Link must start with https://",1);
- if(!qr)return say("Please scan your card QR code.",1);
- if(!$("tc").checked)return say("Please accept the Terms & Privacy Policy.",1);
-
- const cardCode=extractCardCode(qr);
- if(!cardCode)return say("Card code not found. Please scan the card QR again.",1);
-
- $("sub").disabled=true;
- try{
-  await rpc("activate_card",{
-   p_code:cardCode,
-   p_email:em,
-   p_password:pw,
-   p_platform:pl,
-   p_link:ln
-  });
- }catch(err){
-  $("sub").disabled=false;
-  const message=String(err.message||"");
-  return say(
-   message.includes("QR_ALREADY_ACTIVATED")?"This QR card is already activated. It is locked to one email.":
-   message.includes("NOT_ADMIN")?"This account is not allowed to activate cards.":
-   message==="SESSION_EXPIRED"?"Session expired. Please login again.":
-   "Could not activate. Check your connection and try again.",
-   1
-  );
- }
- $("sub").disabled=false;
- $("sheet").innerHTML=
-  '<div class="hd"><div class="logo">⭐</div><div><h1>Tapstar</h1><p>Card activation</p></div></div>'+
-  '<div class="ok"><div class="tick">✓</div><h2>Card Activated!</h2>'+
-  '<p>Your card is now linked to your <b>'+pl.replace(/</g,"&lt;")+
-  '</b>.<br>Tap it on any phone to open your link.</p>'+
-  '<button onclick="location.reload()">Activate another card</button></div>';
-};
-view();
+start();
 </script>
 </body>
 </html>
