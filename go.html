@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tapstar</title>
+<style>
+:root{--bg:#1e2533;--ink:#fff;--mut:#b6c3d8;--pri:#0a84c6}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;text-align:center;padding:24px}
+.logo{font-size:56px}
+h1{margin:8px 0 4px;font-size:24px}p{color:var(--mut);margin:6px 0}
+.sp{width:34px;height:34px;border:4px solid #33425c;border-top-color:var(--pri);border-radius:50%;margin:18px auto;animation:r 1s linear infinite}
+@keyframes r{to{transform:rotate(360deg)}}
+.b{display:block;margin:10px auto;max-width:280px;padding:14px;border-radius:14px;background:var(--pri);color:#fff;text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<div>
+ <div class="logo">⭐</div><h1>Tapstar</h1>
+ <div class="sp" id="sp"></div>
+ <p id="m">Opening your link…</p>
+ <div id="a"></div>
+</div>
+<script>
+// ===== SUPABASE CONFIG (same as the activation page) =====
+const SB_URL="https://dmwdsqrcncsaoppsrduh.supabase.co";
+const SB_KEY="sb_publishable_lPUAHCljOxJaoNR_aEfuIQ_Iu5wys7D";
+
+const $=id=>document.getElementById(id);
+function fail(t){$("sp").style.display="none";$("m").textContent=t}
+// Card code: from ?c=CODE or the last part of the web address (yourdomain.com/CODE)
+const q=new URLSearchParams(location.search).get("c");
+const code=(q||location.pathname.split("/").filter(Boolean).pop()||"").trim();
+if(!code||/\.html?$/i.test(code)){fail("No card code found.")}
+else{
+ fetch(SB_URL+"/rest/v1/rpc/get_card_link",{method:"POST",headers:{"Content-Type":"application/json",apikey:SB_KEY},body:JSON.stringify({p_code:code})})
+ .then(r=>r.ok?r.json():Promise.reject())
+ .then(link=>{
+  if(!link)return fail("This card is not activated yet.");
+  if(/^https?:\/\//i.test(link)){location.replace(link);return}
+  // a phone number: show call and WhatsApp buttons
+  const n=String(link).replace(/[^\d+]/g,""),d=n.replace(/\D/g,"");
+  $("sp").style.display="none";$("m").textContent="Contact";
+  const a=$("a");
+  const c=document.createElement("a");c.className="b";c.href="tel:"+n;c.textContent="📞 Call "+n;a.appendChild(c);
+  const w=document.createElement("a");w.className="b";w.href="https://wa.me/"+d;w.textContent="💬 WhatsApp";a.appendChild(w);
+ })
+ .catch(()=>fail("Could not open this card. Please try again."));
+}
+</script>
+</body>
+</html>
